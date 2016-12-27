@@ -20,6 +20,6 @@ for update in g.get_updates():
     # move units from general to arbitrary square
     for dy, dx in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
         if (0 <= y+dy < update['rows'] and 0 <= x+dx < update['cols']
-                and update_tile['grid'][y+dy][x+dx] != generals.MOUNTAIN):
+                and update['tile_grid'][y+dy][x+dx] != generals.MOUNTAIN):
             g.move(y, x, y+dy, x+dx)
             break
