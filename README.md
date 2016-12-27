@@ -1,6 +1,6 @@
 # Generalsio
 
-Python client for interacting with the multiplayer web game [generals.io]((http://generals.io). It can be used to build bots to play the game in an automated fashion.
+Python client for interacting with the multiplayer web game [generals.io](http://generals.io). It can be used to build bots to play the game in an automated fashion.
 
 
 ## Setup
