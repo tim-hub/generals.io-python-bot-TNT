@@ -3,7 +3,7 @@ import logging
 import json
 import threading
 import time
-from websocket import create_connection
+from websocket import create_connection, WebSocketConnectionClosedException
 
 
 EMPTY = -1
@@ -71,7 +71,13 @@ class Generals(object):
 
     def get_updates(self):
         while True:
-            msg = self._ws.recv()
+            try:
+                msg = self._ws.recv()
+            except WebSocketConnectionClosedException:
+                break
+
+            if not msg.strip():
+                break
 
             # ignore heartbeats and connection acks
             if msg in {"3", "40"}:
@@ -97,6 +103,9 @@ class Generals(object):
                 break
             else:
                 logging.info("Unknown message type: {}".format(msg))
+
+    def close(self):
+        self._ws.close()
 
     def _make_update(self, data):
         _apply_diff(self._map, data['map_diff'])
@@ -147,13 +156,19 @@ class Generals(object):
 
     def _start_sending_heartbeat(self):
         while True:
-            with self._lock:
-                self._ws.send("2")
+            try:
+                with self._lock:
+                    self._ws.send("2")
+            except WebSocketConnectionClosedException:
+                break
             time.sleep(0.1)
 
     def _send(self, msg):
-        with self._lock:
-            self._ws.send("42" + json.dumps(msg))
+        try:
+            with self._lock:
+                self._ws.send("42" + json.dumps(msg))
+        except WebSocketConnectionClosedException:
+            pass
 
 
 def _spawn(f):
