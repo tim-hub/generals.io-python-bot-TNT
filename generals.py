@@ -28,8 +28,8 @@ _RESULTS = {
 
 
 class Generals(object):
-    def __init__(self, userid, username, gameid=None, force_start=True,
-                 region="na"):
+    def __init__(self, userid, username, mode="1v1", gameid=None,
+                 force_start=True, region="na"):
         logging.debug("Creating connection")
         self._region = region
         self._ws = create_connection(_ENDPOINTS[self._region])
@@ -42,13 +42,18 @@ class Generals(object):
         self._send(["star_and_rank", userid])
         self._send(["set_username", userid, username])
 
-        # 1v1 or private
-        if gameid:
+        if mode == "private":
+            if gameid is None:
+                raise ValueError("Gameid must be provided for private games")
             self._send(["join_private", gameid, username, userid])
-
-        # ffa
-        else:
+        elif mode == "1v1":
+            self._send(["join_1v1", username, userid])
+        elif mode == "team":
+            self._send(["join_team", username, userid])
+        elif mode == "ffa":
             self._send(["play", username, userid])
+        else:
+            raise ValueError("Invalid mode")
 
         self._send(["set_force_start", gameid, force_start])
 

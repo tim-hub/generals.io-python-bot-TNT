@@ -17,10 +17,13 @@ Python client for interacting with the multiplayer web game [generals.io](http:/
     g = generals.Generals('your userid', 'your username', '1v1')
 
     # ffa on eu server
-    # g = generals.Generals('your userid', 'your username', region='eu')
+    # g = generals.Generals('your userid', 'your username', 'ffa', region='eu')
 
     # private game
-    # g = generals.Generals('your userid', 'your username', 'your gameid')
+    # g = generals.Generals('your userid', 'your username', 'private', 'your gameid')
+
+    # 2v2 game
+    # g = generals.Generals('your userid', 'your username', 'team')
 
     for update in g.get_updates():
 
