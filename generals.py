@@ -149,7 +149,7 @@ class Generals(object):
                          for g in data['generals']],
             'cities': [(c // cols, c % cols) for c in self._cities],
             'usernames': self._start_data['usernames'],
-            'teams': self._start_data['teams'],
+            'teams': self._start_data.get('teams'),
             'stars': self._stars,
             'replay_url': (_REPLAY_URLS[self._region]
                            + self._start_data['replay_id']),
@@ -161,7 +161,7 @@ class Generals(object):
             'result': update == "game_won",
             'player_index': self._start_data['playerIndex'],
             'usernames': self._start_data['usernames'],
-            'teams': self._start_data['teams'],
+            'teams': self._start_data.get('teams'),
             'stars': self._stars,
             'replay_url': (_REPLAY_URLS[self._region]
                            + self._start_data['replay_id']),
