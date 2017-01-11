@@ -46,12 +46,18 @@ class Generals(object):
             if gameid is None:
                 raise ValueError("Gameid must be provided for private games")
             self._send(["join_private", gameid, username, userid])
+
         elif mode == "1v1":
             self._send(["join_1v1", username, userid])
+
         elif mode == "team":
-            self._send(["join_team", username, userid])
+            if gameid is None:
+                raise ValueError("Gameid must be provided for team games")
+            self._send(["join_team", gameid, username, userid])
+
         elif mode == "ffa":
             self._send(["play", username, userid])
+
         else:
             raise ValueError("Invalid mode")
 
@@ -143,6 +149,7 @@ class Generals(object):
                          for g in data['generals']],
             'cities': [(c // cols, c % cols) for c in self._cities],
             'usernames': self._start_data['usernames'],
+            'teams': self._start_data['teams'],
             'stars': self._stars,
             'replay_url': (_REPLAY_URLS[self._region]
                            + self._start_data['replay_id']),
@@ -154,6 +161,7 @@ class Generals(object):
             'result': update == "game_won",
             'player_index': self._start_data['playerIndex'],
             'usernames': self._start_data['usernames'],
+            'teams': self._start_data['teams'],
             'stars': self._stars,
             'replay_url': (_REPLAY_URLS[self._region]
                            + self._start_data['replay_id']),
