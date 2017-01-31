@@ -26,6 +26,8 @@ _RESULTS = {
     "game_lost": "lose",
 }
 
+_BOT_KEY = "l1IllII1"
+
 
 class Generals(object):
     def __init__(self, userid, username, mode="1v1", gameid=None,
@@ -39,29 +41,29 @@ class Generals(object):
         _spawn(self._start_sending_heartbeat)
 
         logging.debug("Joining game")
-        self._send(["star_and_rank", userid])
-        self._send(["set_username", userid, username])
+        self._send(["set_username", userid, username, _BOT_KEY])
 
         if mode == "private":
             if gameid is None:
                 raise ValueError("Gameid must be provided for private games")
-            self._send(["join_private", gameid, username, userid])
+            self._send(["join_private", gameid, userid, _BOT_KEY])
 
         elif mode == "1v1":
-            self._send(["join_1v1", username, userid])
+            self._send(["join_1v1", userid, _BOT_KEY])
 
         elif mode == "team":
             if gameid is None:
                 raise ValueError("Gameid must be provided for team games")
-            self._send(["join_team", gameid, username, userid])
+            self._send(["join_team", gameid, userid, _BOT_KEY])
 
         elif mode == "ffa":
-            self._send(["play", username, userid])
+            self._send(["play", userid, _BOT_KEY])
 
         else:
             raise ValueError("Invalid mode")
 
-        self._send(["set_force_start", gameid, force_start])
+        if gameid:
+            self._send(["set_force_start", gameid, force_start])
 
         self._seen_update = False
         self._move_id = 1
@@ -174,7 +176,7 @@ class Generals(object):
                     self._ws.send("2")
             except WebSocketConnectionClosedException:
                 break
-            time.sleep(0.1)
+            time.sleep(10)
 
     def _send(self, msg):
         try:
