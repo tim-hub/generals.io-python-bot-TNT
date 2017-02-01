@@ -2,11 +2,11 @@
 import generals
 
 
-# 1v1 on north america server
+# 1v1
 g = generals.Generals('your userid', 'your username', '1v1')
 
-# ffa on eu server
-# g = generals.Generals('your userid', 'your username', 'ffa', region='eu')
+# ffa
+# g = generals.Generals('your userid', 'your username', 'ffa')
 
 # private game
 # g = generals.Generals('your userid', 'your username', 'private', 'your gameid')

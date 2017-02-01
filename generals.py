@@ -34,7 +34,7 @@ _BOT_KEY = "l1IllII1"
 
 class Generals(object):
     def __init__(self, userid, username, mode="1v1", gameid=None,
-                 force_start=True, region="na"):
+                 force_start=True, region="bot"):
         logging.debug("Creating connection")
         self._region = region
         self._ws = create_connection(_ENDPOINTS[self._region])
