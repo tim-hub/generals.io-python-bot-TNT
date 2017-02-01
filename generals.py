@@ -14,10 +14,13 @@ OBSTACLE = -4
 _ENDPOINTS = {
     'na': "ws://ws.generals.io/socket.io/?EIO=3&transport=websocket",
     'eu': "ws://euws.generals.io/socket.io/?EIO=3&transport=websocket",
+    'bot': "ws://botws.generals.io/socket.io/?EIO=3&transport=websocket",
 }
+
 _REPLAY_URLS = {
     'na': "http://generals.io/replays/",
     'eu': "http://eu.generals.io/replays/",
+    'bot': "http://bot.generals.io/replays/",
 }
 
 _RESULTS = {
