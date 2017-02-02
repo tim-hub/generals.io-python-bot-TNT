@@ -1,6 +1,8 @@
-
+#!/bin/python
 import generals
+import logging
 
+logging.basicConfig(level=logging.DEBUG)
 
 # 1v1
 g = generals.Generals('your userid', 'your username', '1v1')
@@ -18,7 +20,10 @@ for update in g.get_updates():
 
     # get position of your general
     pi = update['player_index']
-    y, x = update['generals'][pi]
+    try:
+        y, x = update['generals'][pi]
+    except KeyError:
+        break
 
     # move units from general to arbitrary square
     for dy, dx in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
