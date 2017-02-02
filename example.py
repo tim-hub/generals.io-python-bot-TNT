@@ -1,6 +1,8 @@
 #!/bin/python
 import generals
+import logging
 
+logging.basicConfig(level=logging.DEBUG)
 
 # 1v1
 g = generals.Generals('your userid', 'your username', '1v1')
