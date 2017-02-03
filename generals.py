@@ -61,6 +61,7 @@ class Generals(object):
 
         elif mode == "ffa":
             self._send(["play", userid, _BOT_KEY])
+            self._send(["set_force_start", gameid, force_start])
 
         else:
             raise ValueError("Invalid mode")
