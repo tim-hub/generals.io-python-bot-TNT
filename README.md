@@ -37,3 +37,12 @@ Python client for interacting with the multiplayer web game [generals.io](http:/
                 g.move(y, x, y+dy, x+dx)
                 break
 
+## Credits
+toshima
+
+
+## License
+The Project is under EPL 1.0 License.
+And general.py and example.py is folked from toshima under MIT license.
+
+
