@@ -38,7 +38,7 @@ Python client for interacting with the multiplayer web game [generals.io](http:/
                 break
 
 ## Credits
-toshima
+[toshima's original one](https://github.com/toshima/generalsio)
 
 
 ## License
