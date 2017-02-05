@@ -1,6 +1,8 @@
-# Generalsio
+# Generals IO Python Bot (Working On It)
 
-Python client for interacting with the multiplayer web game [generals.io](http://generals.io). It can be used to build bots to play the game in an automated fashion.
+It is a bot for the [generals.io](http://bot.generals.io) 
+
+This Bot is based on [toshima's generals io python client](https://github.com/toshima/generalsio), a Python client for interacting with the multiplayer web game generals.io. It can be used to build bots to play the game in an automated fashion.
 
 
 ## Setup
@@ -8,34 +10,11 @@ Python client for interacting with the multiplayer web game [generals.io](http:/
     pip install -r requirements.txt
 
 
-## Example usage
-
-    import generals
-
-    # 1v1
-    g = generals.Generals('your userid', 'your username', '1v1')
-
-    # ffa
-    # g = generals.Generals('your userid', 'your username', 'ffa')
-
-    # private game
-    # g = generals.Generals('your userid', 'your username', 'private', 'your gameid')
-
-    # 2v2 game
-    # g = generals.Generals('your userid', 'your username', 'team')
-
-    for update in g.get_updates():
-
-        # get position of your general
-        pi = update['player_index']
-        y, x = update['generals'][pi]
-
-        # move units from general to arbitrary square
-        for dy, dx in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
-            if (0 <= y+dy < update['rows'] and 0 <= x+dx < update['cols']
-                    and update['tile_grid'][y+dy][x+dx] != generals.MOUNTAIN):
-                g.move(y, x, y+dy, x+dx)
-                break
+## How To:
+0. set the `USER_ID, USER_NAME, GAME_ID (for custom game)` in **config.py.example**  (as for how to get USER_ID of generals io, you can visit dev.generals.io)
+1. and rename it to `config.py`
+1. choose the bot `strategies_combo.py`
+2. `python strategies_combo.py`
 
 ## Credits
 [toshima's original one](https://github.com/toshima/generalsio)

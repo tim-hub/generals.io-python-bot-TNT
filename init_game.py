@@ -13,6 +13,8 @@ logging.basicConfig(level=logging.DEBUG)
 
 # private game
 general = generals.Generals(USER_ID, USER_NAME, 'private', GAME_ID)
+print USER_ID
+print GAME_ID
 
 # 2v2 game
 # general = generals.Generals('your userid', 'your username', 'team')
