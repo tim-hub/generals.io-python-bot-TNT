@@ -175,12 +175,25 @@ for update in general.get_updates():
     # if tiles[general_y][general_x-1] !=generals.MOUNTAIN and armies[general_y][general_x-1]==0:
     #     general.move(general_y,general_x,general_y,general_x-1)
     # print what_tiles_we_have(tiles, armies)
-    print turn
-    print tiles
-    print cities
+
+
+
+
 
     armies_we_have, tiles_we_own, borders, inlands=what_tiles_we_have(tiles,armies)
-    print armies_we_have
+
+
+    basic_turn_info='''
+    Turn: %s
+    Map(Tiles):
+    %s
+    Cities:
+    %s
+    Armies We Have:
+    %s
+    ''' %(turn, tiles, cities, armies_we_have)
+
+    print(basic_turn_info)
 
     empties=empties_near(tiles_we_own)
     print empties
