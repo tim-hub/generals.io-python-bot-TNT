@@ -45,6 +45,13 @@ def is_inland(y,x):
             and tiles[y-1][x]==pi and tiles[y+1][x]==pi:
         return True;
 
+def where_we_can_go(tiles):
+    for y in range(0,len(tiles)):
+        for x in range(0, len(tiles[y])):
+            if not (tiles[y][x] == generals.MOUNTAIN ):
+                pass
+
+
 
 def what_tiles_we_have(tiles, armies):
     armies_we_have={}

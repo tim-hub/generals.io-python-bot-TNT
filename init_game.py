@@ -1,5 +1,5 @@
 #!/bin/python
-import generals
+from generals_io_client import generals
 import logging
 from config import USER_ID, USER_NAME,GAME_ID
 
