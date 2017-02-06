@@ -2,10 +2,7 @@
 
 It is a bot for the [generals.io](http://bot.generals.io) 
 
-This Bot is based on [toshima's generals io python client](https://github.com/toshima/generalsio), a Python client for interacting with the multiplayer web game generals.io. It can be used to build bots to play the game in an automated fashion.
-
-
-## Setup
+## Requirements
 
     pip install -r requirements.txt
 
@@ -17,11 +14,10 @@ This Bot is based on [toshima's generals io python client](https://github.com/to
 2. `python strategies_combo.py`
 
 ## Credits
-[toshima's original one](https://github.com/toshima/generalsio)
+[toshima's generals io client](https://github.com/toshima/generalsio)
 
 
 ## License
 The Project is under EPL 1.0 License.
-And general.py and example.py is folked from toshima under MIT license.
 
 
