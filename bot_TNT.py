@@ -3,20 +3,30 @@ import logging
 from generals_io_client import generals
 import math
 
+enermy_capital_value=10
+enermy_city_value=8
+empty_city_value=5
+empty_tile_value=4
+enerymy_tile_value=2
+
 logging.basicConfig(level=logging.DEBUG)
 
 # first_update=general.get_updates()[0]
 # rows=first_update['rows']
 # cols=first_update['cols']
-# pi=first_update['player_index']
-# general_y, general_x =first_update['generals'][pi]
+# our_flag=first_update['player_index']
+# general_y, general_x =first_update['generals'][our_flag]
+turn=0
 rows=20
 cols=20
-pi=0
+our_flag=0
+
 general_y, general_x =0,0
+general_position=(general_y,general_x)
 tiles=[]
 armies=[]
 cities=[]
+generals_list=[]
 
 
 def position_plus(a,b):
@@ -34,23 +44,71 @@ def index_to_grid(index):
 #     )
 def get_distance(position1,position2):
 
-    # logging.info( '%s %s' % (position1, position2))
-    return math.sqrt(
-        math.pow(position1[0]-position2[0],2)+math.pow(position1[1]-position2[1],2)
-    )
+
+    return math.fabs(position1[0]-position2[0])+math.fabs(position1[1]-position2[1])
+
+def how_far_from_general(position):
+    return (position, general_position)
+
+
 def is_inland(y,x):
 
     if y+1<cols and y-1>=0 and x-1>=0 and x+1<rows \
-            and tiles[y][x+1] ==pi and tiles[y][x-1]==pi \
-            and tiles[y-1][x]==pi and tiles[y+1][x]==pi:
+            and tiles[y][x+1] ==our_flag and tiles[y][x-1]==our_flag \
+            and tiles[y-1][x]==our_flag and tiles[y+1][x]==our_flag:
         return True;
 
-def where_we_can_go(tiles):
+def get_destinations_with_priority():
+    priorities_of_destinations={}
+
     for y in range(0,len(tiles)):
         for x in range(0, len(tiles[y])):
-            if not (tiles[y][x] == generals.MOUNTAIN ):
-                pass
+            if  (tiles[y][x] != generals.MOUNTAIN ): # this is where we can go
+                is_a_capital= (y,x) in generals_list
 
+                is_a_city= (y,x) in cities
+                is_ours= tiles[y][x] == our_flag
+
+                is_empty = tiles[y][x] == generals.EMPTY
+                belong_to_others= armies[y][x] !=0
+                # is_in_fog= tiles[y][x] ==generals.FOG
+                # is_obstacle = tiles[y][x] == generals.OBSTACLE
+
+                # how_many_armies=armies[y][x] ## only visible
+
+                # how_far=how_far_from_general((y,x))
+
+
+
+
+                p=get_priority_of_destination(is_a_capital, is_a_city, is_ours, is_empty, belong_to_others)
+
+                if p>0:
+                    priorities_of_destinations[(y,x)]=p
+
+
+
+
+    return priorities_of_destinations
+
+
+def get_priority_of_destination(is_a_capital, is_a_city, is_ours, is_empty, belong_to_others):
+    p = 0
+
+    if is_a_capital and not is_ours:
+        p += enermy_capital_value
+    if is_a_city:
+        if is_ours == False:
+            p += enermy_city_value
+        else:
+            p += empty_city_value
+    if is_empty:
+        p += empty_tile_value
+
+    if is_ours == False and belong_to_others:
+        p += enerymy_tile_value
+
+    return p
 
 
 def what_tiles_we_have(tiles, armies):
@@ -60,7 +118,7 @@ def what_tiles_we_have(tiles, armies):
     inlands=[]
     for y in range(0,len(tiles)):
         for x in range(0, len(tiles[y])):
-            if tiles[y][x] ==pi:
+            if tiles[y][x] ==our_flag:
                 # we own this places
                 armies_we_have[(y,x)]=armies[y][x]
                 tiles_we_own.append((y,x))
@@ -71,7 +129,7 @@ def what_tiles_we_have(tiles, armies):
 
     return armies_we_have, tiles_we_own,borders,inlands
 
-def empties_near(tiles_we_own):
+def empties_near(tiles_we_own, tiles):
     empties=[]
     for tile in tiles_we_own:
         y=tile[0]
@@ -125,45 +183,40 @@ def which_corp_near_there( tiles_we_own, destination):
 
 
 
-
-
-
-
-
-
-
 def defeat():
     pass
 
 
-print position_plus((1,1),(2,2))
 
-for update in general.get_updates():
+
+for state in general.get_updates():
 
     # get position of your general
-    pi = update['player_index']
+    our_flag = state['player_index']
     try:
-        general_y, general_x = update['generals'][pi]
+        general_y, general_x = state['generals'][our_flag]
     except KeyError:
         break
 
-    rows, cols = update['rows'], update['cols']
+    rows, cols = state['rows'], state['cols']
 
-    tiles = update['tile_grid']
-    armies = update['army_grid']
-    cities = update['cities']
-    turn=update['turn']
+    turn = state['turn']
+    tiles = state['tile_grid']
+    armies = state['army_grid']
+    cities = state['cities']
+    generals_list=state['generals']
+
 
     # move_to units from general to arbitrary square
     # for dy, dx in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
-    #     if (0 <= general_y+dy < update['rows'] and 0 <= general_x+dx < update['cols']
-    #             and update['tile_grid'][general_y+dy][general_x+dx] != generals.MOUNTAIN):
+    #     if (0 <= general_y+dy < state['rows'] and 0 <= general_x+dx < state['cols']
+    #             and state['tile_grid'][general_y+dy][general_x+dx] != generals.MOUNTAIN):
     #         general.move(general_y, general_x, general_y+dy, general_x+dx)
     #         break
 
-    # for k,v in update:
+    # for k,v in state:
     #     print '%s : %s' %(k,v)
-    # print  update
+    # print  state
     # explore(general_y, general_x, get_radius(rows, cols))
 
     # print armies
@@ -202,18 +255,19 @@ for update in general.get_updates():
 
     print(basic_turn_info)
 
-    empties=empties_near(tiles_we_own)
-    print empties
-    empties_distances, destination_of_lowest_distance=get_empties_distances(empties, (general_y, general_x))
-    print empties_distances
-    print  destination_of_lowest_distance
-    corp=which_corp_near_there(tiles_we_own, destination_of_lowest_distance)
-    print corp
+    # empties=empties_near(tiles_we_own, tiles)
+    # print empties
+    # empties_distances, destination_of_lowest_distance=get_empties_distances(empties, (general_y, general_x))
+    # print empties_distances
+    # print  destination_of_lowest_distance
+    # corp=which_corp_near_there(tiles_we_own, destination_of_lowest_distance)
+    # print corp
+    #
+    #
+    # if armies_we_have[corp]>1:
+    #     general.move(corp[0], corp[1], destination_of_lowest_distance[0], destination_of_lowest_distance[1])
 
-
-    if armies_we_have[corp]>1:
-        general.move(corp[0], corp[1], destination_of_lowest_distance[0], destination_of_lowest_distance[1])
-
+    print get_destinations_with_priority()
 
 
 

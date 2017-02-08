@@ -11,17 +11,8 @@ MOUNTAIN = -2
 FOG = -3
 OBSTACLE = -4
 
-_ENDPOINTS = {
-    'na': "ws://ws.generals.io/socket.io/?EIO=3&transport=websocket",
-    'eu': "ws://euws.generals.io/socket.io/?EIO=3&transport=websocket",
-    'bot': "ws://botws.generals.io/socket.io/?EIO=3&transport=websocket",
-}
-
-_REPLAY_URLS = {
-    'na': "http://generals.io/replays/",
-    'eu': "http://eu.generals.io/replays/",
-    'bot': "http://bot.generals.io/replays/",
-}
+_ENDPOINT = "ws://botws.generals.io/socket.io/?EIO=3&transport=websocket"
+_REPLAY_URL = "http://bot.generals.io/replays/"
 
 _RESULTS = {
     "game_update": "",
@@ -29,38 +20,37 @@ _RESULTS = {
     "game_lost": "lose",
 }
 
-_BOT_KEY = "l1IllII1"
-
 
 class Generals(object):
+
+    # region is deprecated
     def __init__(self, userid, username, mode="1v1", gameid=None,
-                 force_start=True, region="bot"):
+                 force_start=True, region=None):
         logging.debug("Creating connection")
-        self._region = region
-        self._ws = create_connection(_ENDPOINTS[self._region])
+        self._ws = create_connection(_ENDPOINT)
         self._lock = threading.RLock()
 
         logging.debug("Starting heartbeat thread")
         _spawn(self._start_sending_heartbeat)
 
         logging.debug("Joining game")
-        self._send(["set_username", userid, username, _BOT_KEY])
+        self._send(["set_username", userid, username])
 
         if mode == "private":
             if gameid is None:
                 raise ValueError("Gameid must be provided for private games")
-            self._send(["join_private", gameid, userid, _BOT_KEY])
+            self._send(["join_private", gameid, userid])
 
         elif mode == "1v1":
-            self._send(["join_1v1", userid, _BOT_KEY])
+            self._send(["join_1v1", userid])
 
         elif mode == "team":
             if gameid is None:
                 raise ValueError("Gameid must be provided for team games")
-            self._send(["join_team", gameid, userid, _BOT_KEY])
+            self._send(["join_team", gameid, userid])
 
         elif mode == "ffa":
-            self._send(["play", userid, _BOT_KEY])
+            self._send(["play", userid])
 
         else:
             raise ValueError("Invalid mode")
@@ -174,6 +164,7 @@ class Generals(object):
             'usernames': self._start_data['usernames'],
             'teams': self._start_data.get('teams'),
             'stars': self._stars,
+<<<<<<< HEAD:generals_io_client/generals.py
             'replay_url': (_REPLAY_URLS[self._region]
                            + self._start_data['replay_id']),
 
@@ -184,6 +175,9 @@ class Generals(object):
             # return the index format data
             'armies': self._map[2:cols*rows+1],
             'terrain' : self._map[cols*rows+2:len(self._map)-1]
+=======
+            'replay_url': _REPLAY_URL + self._start_data['replay_id'],
+>>>>>>> 61da538... Remove support for NA and EU regions:generals.py
         }
         # return {
         #     'complete': False,
@@ -218,8 +212,7 @@ class Generals(object):
             'usernames': self._start_data['usernames'],
             'teams': self._start_data.get('teams'),
             'stars': self._stars,
-            'replay_url': (_REPLAY_URLS[self._region]
-                           + self._start_data['replay_id']),
+            'replay_url': _REPLAY_URL + self._start_data['replay_id'],
         }
 
     def _start_sending_heartbeat(self):

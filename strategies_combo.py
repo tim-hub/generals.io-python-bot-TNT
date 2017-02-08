@@ -8,8 +8,8 @@ logging.basicConfig(level=logging.DEBUG)
 # first_update=general.get_updates()[0]
 # rows=first_update['rows']
 # cols=first_update['cols']
-# pi=first_update['player_index']
-# general_y, general_x =first_update['generals'][pi]
+# our_flag=first_update['player_index']
+# general_y, general_x =first_update['generals'][our_flag]
 rows=20
 cols=20
 pi=0
@@ -35,9 +35,10 @@ def index_to_grid(index):
 def get_distance(position1,position2):
 
     # logging.info( '%s %s' % (position1, position2))
-    return math.sqrt(
-        math.pow(position1[0]-position2[0],2)+math.pow(position1[1]-position2[1],2)
-    )
+    # return math.sqrt(
+    #     math.pow(position1[0]-position2[0],2)+math.pow(position1[1]-position2[1],2)
+    # )
+    return math.fabs(position1[0] - position2[0]) + math.fabs(position1[1] - position2[1])
 def is_inland(y,x):
 
     if y+1<cols and y-1>=0 and x-1>=0 and x+1<rows \
@@ -149,14 +150,14 @@ for update in general.get_updates():
 
     # move_to units from general to arbitrary square
     # for dy, dx in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
-    #     if (0 <= general_y+dy < update['rows'] and 0 <= general_x+dx < update['cols']
-    #             and update['tile_grid'][general_y+dy][general_x+dx] != generals.MOUNTAIN):
+    #     if (0 <= general_y+dy < state['rows'] and 0 <= general_x+dx < state['cols']
+    #             and state['tile_grid'][general_y+dy][general_x+dx] != generals.MOUNTAIN):
     #         general.move(general_y, general_x, general_y+dy, general_x+dx)
     #         break
 
-    # for k,v in update:
+    # for k,v in state:
     #     print '%s : %s' %(k,v)
-    # print  update
+    # print  state
     # explore(general_y, general_x, get_radius(rows, cols))
 
     # print armies
@@ -191,7 +192,7 @@ for update in general.get_updates():
     %s
     Armies We Have:
     %s
-    ''' %(turn, tiles, cities, armies_we_have)
+    ''' %(turn, armies, cities, armies_we_have)
 
     print(basic_turn_info)
 
