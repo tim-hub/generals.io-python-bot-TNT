@@ -58,11 +58,15 @@ def is_inland(y,x):
             and tiles[y-1][x]==our_flag and tiles[y+1][x]==our_flag:
         return True;
 
-def get_destinations_with_priority():
-    priorities_of_destinations={}
+def get_tiles_with_priority():
+    destinations_with_priority={}
+    tiles_we_see=[]
 
     for y in range(0,len(tiles)):
         for x in range(0, len(tiles[y])):
+            if  ((tiles[y][x] !=generals.FOG )  ):
+                tiles_we_see.append((y,x))   #get what we see in the map
+
             if  (tiles[y][x] != generals.MOUNTAIN ): # this is where we can go
                 is_a_capital= (y,x) in generals_list
 
@@ -78,18 +82,13 @@ def get_destinations_with_priority():
 
                 # how_far=how_far_from_general((y,x))
 
-
-
-
                 p=get_priority_of_destination(is_a_capital, is_a_city, is_ours, is_empty, belong_to_others)
 
                 if p>0:
-                    priorities_of_destinations[(y,x)]=p
+                    destinations_with_priority[(y,x)]=p
 
-
-
-
-    return priorities_of_destinations
+    # return priorities_of_destinations
+    return rank_all_we_see(destinations_with_priority,tiles_we_see)
 
 
 def get_priority_of_destination(is_a_capital, is_a_city, is_ours, is_empty, belong_to_others):
@@ -110,8 +109,35 @@ def get_priority_of_destination(is_a_capital, is_a_city, is_ours, is_empty, belo
 
     return p
 
+def rank_all_we_see(destinations, tiles_we_see):
+    print destinations
+    tiles_we_rank={}
+    for k, v in destinations:
+        for tile in tiles_we_see:
+            # print tile
+            print k
+            print v
+            distance=get_distance(k, tile)
+            p=get_priority_of_the_tile(v,distance)
+            tiles_we_rank[tile]=p
 
-def what_tiles_we_have(tiles, armies):
+    return tiles_we_rank
+
+
+def get_priority_of_the_tile(priority, distance ):
+    return 1-math.log(distance, cols)*priority # 0: +infinate, cols:0, 1:1
+
+
+def what_tiles_we_see():
+    tiles_we_see = []
+    for y in range(0,len(tiles)):
+        for x in range(0, len(tiles[y])):
+            if not ((tiles[y][x] ==generals.FOG ) ):
+                tiles_we_see.append((y,x))   #get what we see in the map
+    return tiles_we_see
+
+
+def what_tiles_we_have():
     armies_we_have={}
     tiles_we_own=[]
     borders=[]
@@ -128,6 +154,8 @@ def what_tiles_we_have(tiles, armies):
                     borders.append((y,x))
 
     return armies_we_have, tiles_we_own,borders,inlands
+
+
 
 def empties_near(tiles_we_own, tiles):
     empties=[]
@@ -189,6 +217,7 @@ def defeat():
 
 
 
+
 for state in general.get_updates():
 
     # get position of your general
@@ -204,8 +233,7 @@ for state in general.get_updates():
     tiles = state['tile_grid']
     armies = state['army_grid']
     cities = state['cities']
-    generals_list=state['generals']
-
+    generals_list = state['generals']
 
     # move_to units from general to arbitrary square
     # for dy, dx in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
@@ -240,10 +268,9 @@ for state in general.get_updates():
 
 
 
-    armies_we_have, tiles_we_own, borders, inlands=what_tiles_we_have(tiles,armies)
+    armies_we_have, tiles_we_own, borders, inlands = what_tiles_we_have()
 
-
-    basic_turn_info='''
+    basic_turn_info = '''
     Turn: %s
     Map(Tiles):
     %s
@@ -251,8 +278,10 @@ for state in general.get_updates():
     %s
     Armies We Have:
     %s
-    ''' %(turn, tiles, cities, armies_we_have)
+    ''' % (turn, tiles, cities, armies_we_have)
 
+    from console_output import clear
+    clear()
     print(basic_turn_info)
 
     # empties=empties_near(tiles_we_own, tiles)
@@ -267,7 +296,30 @@ for state in general.get_updates():
     # if armies_we_have[corp]>1:
     #     general.move(corp[0], corp[1], destination_of_lowest_distance[0], destination_of_lowest_distance[1])
 
-    print get_destinations_with_priority()
+    destinations = get_tiles_with_priority()
+    starts = armies_we_have
+
+    we_can={}
+    best_priority=0
+
+    best_move=((general_position),general_position+(1,0))
+
+    for destination_position, priority in destinations:
+        for corp_position, number in starts:
+            if get_distance(destination_position,corp_position) <=1 and number>1 and number>armies[destination_position[0],destination_position[1]]:
+                we_can[corp_position, destination_position]=priority
+                if priority>best_priority:
+                    best_priority=priority
+                    best_move=(corp_position, destination_position)
+
+
+
+
+    des=best_move[1]
+    corp = best_move[0]
+
+    general.move(corp[0], corp[1], des[0], des[1])
+
 
 
 
