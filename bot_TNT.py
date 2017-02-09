@@ -108,7 +108,7 @@ def get_priority_of_destination(is_a_capital, is_a_city, is_ours, is_empty, belo
     return p
 
 def rank_all_we_see(destinations, tiles_we_see):
-    print destinations
+    # print destinations
     tiles_we_rank={}
     for destination_position in destinations:
         for tile in tiles_we_see:
@@ -117,7 +117,7 @@ def rank_all_we_see(destinations, tiles_we_see):
             distance=get_distance(destination_position, tile)
             # print distance
             # print priority
-            if distance!=0:
+            if (distance==0 or tile ==generals.MOUNTAIN)==False:
                 p=get_priority_of_the_tile(priority,distance)
                 tiles_we_rank[tile]=p
 
@@ -128,7 +128,9 @@ def get_priority_of_the_tile(priority, distance ):
     # print priority
     # print distance
     # print cols
-    return 1-math.log(distance, cols)*priority # 0: +infinate, cols:0, 1:1
+
+
+    return 1-math.log(distance, cols+rows)*priority # 0: +infinate, cols:0, 1:1
 
 
 def what_tiles_we_see():
@@ -158,64 +160,6 @@ def what_tiles_we_have():
 
     return armies_we_have, tiles_we_own,borders,inlands
 
-
-
-def empties_near(tiles_we_own, tiles):
-    empties=[]
-    for tile in tiles_we_own:
-        y=tile[0]
-        x=tile[1]
-        if y+1<cols:
-            if tiles[y+1][x]==-1 and (y+1,x) not in cities:
-                empties.append((y+1,x))
-        if y-1>0:
-            if tiles[y-1][x]==-1 and(y-1,x) not in cities:
-                empties.append((y-1,x))
-        if x+1<rows:
-            if tiles[y][x+1]==-1 and (y,x+1) not in cities:
-                empties.append((y,x+1))
-        if x-1>0:
-            if tiles[y][x-1]==-1 and (y,x-1) not in cities:
-                empties.append((y,x-1))
-
-    return empties
-
-def get_empties_distances(empties, general_position):
-
-
-
-    empties_distances={}
-    lowest=get_distance(empties[0],general_position)
-    logging.info('distance between first empty and general is %s' %lowest)
-    destination_of_lowest_distance=empties[0]
-    for empty  in empties: #emptys' positions
-
-        distance=get_distance(general_position,empty)
-
-        if distance<lowest:
-            lowest=distance
-            destination_of_lowest_distance=empty
-
-
-        empties_distances[empty]= distance
-
-    return empties_distances, destination_of_lowest_distance
-
-
-def which_corp_near_there( tiles_we_own, destination):
-
-    for tile in tiles_we_own:
-        # print tile
-
-        if position_plus( tile,(1,0))==destination or position_plus(tile, (-1, 0))==destination or \
-                position_plus(tile, (0, 1))==destination or position_plus(tile, (0, -1))==destination:
-            return tile
-    return (general_y,general_x)
-
-
-
-def defeat():
-    pass
 
 
 
@@ -273,19 +217,10 @@ for state in general.get_updates():
 
     armies_we_have, tiles_we_own, borders, inlands = what_tiles_we_have()
 
-    basic_turn_info = '''
-    Turn: %s
-    Map(Tiles):
-    %s
-    Cities:
-    %s
-    Armies We Have:
-    %s
-    ''' % (turn, tiles, cities, armies_we_have)
 
-    from console_output import clear
-    clear()
-    print(basic_turn_info)
+
+
+    # print(basic_turn_info)
 
     # empties=empties_near(tiles_we_own, tiles)
     # print empties
@@ -321,7 +256,12 @@ for state in general.get_updates():
 
 
 
+    from console_output import game_output
+    game_output(state, ranks=destinations)
+
     print best_move
+
+    print destinations
     des=best_move[1]
     corp = best_move[0]
 
