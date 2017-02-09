@@ -43,8 +43,6 @@ def index_to_grid(index):
 #         math.pow(y1-y2,2)-math.pow(x1-x2,2)
 #     )
 def get_distance(position1,position2):
-
-
     return math.fabs(position1[0]-position2[0])+math.fabs(position1[1]-position2[1])
 
 def how_far_from_general(position):
@@ -112,19 +110,24 @@ def get_priority_of_destination(is_a_capital, is_a_city, is_ours, is_empty, belo
 def rank_all_we_see(destinations, tiles_we_see):
     print destinations
     tiles_we_rank={}
-    for k, v in destinations:
+    for destination_position in destinations:
         for tile in tiles_we_see:
             # print tile
-            print k
-            print v
-            distance=get_distance(k, tile)
-            p=get_priority_of_the_tile(v,distance)
-            tiles_we_rank[tile]=p
+            priority=destinations[destination_position]
+            distance=get_distance(destination_position, tile)
+            # print distance
+            # print priority
+            if distance!=0:
+                p=get_priority_of_the_tile(priority,distance)
+                tiles_we_rank[tile]=p
 
     return tiles_we_rank
 
 
 def get_priority_of_the_tile(priority, distance ):
+    # print priority
+    # print distance
+    # print cols
     return 1-math.log(distance, cols)*priority # 0: +infinate, cols:0, 1:1
 
 
@@ -304,9 +307,12 @@ for state in general.get_updates():
 
     best_move=((general_position),general_position+(1,0))
 
-    for destination_position, priority in destinations:
-        for corp_position, number in starts:
-            if get_distance(destination_position,corp_position) <=1 and number>1 and number>armies[destination_position[0],destination_position[1]]:
+    for destination_position in destinations:
+        priority = destinations[destination_position]
+        for corp_position in starts:
+            number=starts[corp_position]
+            # print (destination_position,corp_position)
+            if get_distance(destination_position,corp_position) <=1 and number>1 and number>armies[destination_position[0]][destination_position[1]]:
                 we_can[corp_position, destination_position]=priority
                 if priority>best_priority:
                     best_priority=priority
@@ -315,6 +321,7 @@ for state in general.get_updates():
 
 
 
+    print best_move
     des=best_move[1]
     corp = best_move[0]
 
