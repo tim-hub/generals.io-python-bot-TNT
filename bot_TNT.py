@@ -6,6 +6,7 @@ import math
 enermy_capital_value=10
 enermy_city_value=8
 empty_city_value=5
+our_city_value=1
 empty_tile_value=4
 enerymy_tile_value=2
 
@@ -62,64 +63,88 @@ def get_tiles_with_priority():
 
     for y in range(0,len(tiles)):
         for x in range(0, len(tiles[y])):
-            if  ((tiles[y][x] !=generals.FOG and tiles[y][x]!=generals.OBSTACLE )  ):
+
+            is_fog=tiles[y][x] ==generals.FOG
+            is_obstacle=tiles[y][x]==generals.OBSTACLE
+            # what tiles we can see
+            if  (is_fog==False and is_obstacle==False  ):
                 tiles_we_see.append((y,x))   #get what we see in the map
 
-            if  (tiles[y][x] != generals.OBSTACLE and tiles[y][x] !=generals.MOUNTAIN  and tiles[y][x]!=generals.FOG): # this is where we can go
-                is_a_capital= (y,x) in generals_list
 
-                is_a_city= (y,x) in cities
-                is_ours= tiles[y][x] == our_flag
+            # these two lines of codes will make the generals and city be remebered
+            is_a_capital = (y, x) in generals_list
+            is_a_city = (y, x) in cities
+            is_ours = tiles[y][x] == our_flag
+            is_empty = tiles[y][x] == generals.EMPTY
 
-                is_empty = tiles[y][x] == generals.EMPTY
-                belong_to_others= armies[y][x] !=0
-                # is_in_fog= tiles[y][x] ==generals.FOG
-                # is_obstacle = tiles[y][x] == generals.OBSTACLE
+            have_soldiers = armies[y][x] >0
 
-                # how_many_armies=armies[y][x] ## only visible
+            p = get_priority_of_destination(is_a_capital, is_a_city, is_ours, is_empty, have_soldiers)
 
-                # how_far=how_far_from_general((y,x))
+            if p > 0:
+                destinations_with_priority[(y, x)] = p
 
-                p=get_priority_of_destination(is_a_capital, is_a_city, is_ours, is_empty, belong_to_others)
 
-                if p>0:
-                    destinations_with_priority[(y,x)]=p
+
+
+
+
+
+                    # is_in_fog= tiles[y][x] ==generals.FOG
+                    # is_obstacle = tiles[y][x] == generals.OBSTACLE
+
+                    # how_many_armies=armies[y][x] ## only visible
+
+                    # how_far=how_far_from_general((y,x))
+
 
     # return priorities_of_destinations
-    return rank_all_we_see(destinations_with_priority,tiles_we_see)
+    return destinations_with_priority, rank_all_we_see(destinations_with_priority,tiles_we_see)
 
 
-def get_priority_of_destination(is_a_capital, is_a_city, is_ours, is_empty, belong_to_others):
+def get_priority_of_destination(is_a_capital, is_a_city, is_ours, is_empty, have_soldiers):
     p = 0
 
-    if is_a_capital and not is_ours:
+    if is_a_capital and  is_ours ==False : #enermies capital
         p += enermy_capital_value
-    if is_a_city:
-        if is_ours == False:
-            p += enermy_city_value
-        else:
+    elif is_a_city:
+        if  is_ours: #our city
+            p+=our_city_value
+        elif is_empty: # empty city
             p += empty_city_value
-    if is_empty:
+        else: # it belongs to enermies
+            p += enermy_city_value
+    elif is_empty: # empty tile
         p += empty_tile_value
 
-    if is_ours == False and belong_to_others:
+    elif is_ours == False and have_soldiers: #enermy tile
         p += enerymy_tile_value
 
     return p
 
 def rank_all_we_see(destinations, tiles_we_see):
-    # print destinations
+    # print tiles_ranked
     tiles_we_rank={}
     for destination_position in destinations:
+        priority = destinations[destination_position]
+
+
         for tile in tiles_we_see:
-            # print tile
-            priority=destinations[destination_position]
-            distance=get_distance(destination_position, tile)
-            # print distance
-            # print priority
-            if (distance>0 and tile !=generals.MOUNTAIN):
+            distance = get_distance(destination_position, tile)
+
+            if (tile !=generals.MOUNTAIN):
                 p=get_priority_of_the_tile(priority,distance)
-                tiles_we_rank[tile]=p
+
+                if tile in destinations:
+                    p=priority
+
+                if tile in tiles_we_rank:
+                    tiles_we_rank[tile]+=p
+                else:
+                    tiles_we_rank[tile] = p
+
+
+
 
 
     return tiles_we_rank
@@ -132,9 +157,7 @@ def get_priority_of_the_tile(priority, distance ):
     # print cols
     p=(-math.log(distance+1, cols+rows)+1)*priority # 0: +infinate, cols:0, 1:1
     # print  p
-
-
-    return p
+    return float ("{0:.3f}".format(p))
 
 
 # def what_tiles_we_see():
@@ -238,7 +261,7 @@ for state in general.get_updates():
     # if armies_we_have[corp]>1:
     #     general.move(corp[0], corp[1], destination_of_lowest_distance[0], destination_of_lowest_distance[1])
 
-    destinations = get_tiles_with_priority()
+    destinations,tiles_ranked = get_tiles_with_priority()
     starts = armies_we_have
 
     we_can={}
@@ -246,8 +269,8 @@ for state in general.get_updates():
 
     best_move=((general_position),general_position+(1,0))
 
-    for destination_position in destinations:
-        priority = destinations[destination_position]
+    for destination_position in tiles_ranked:
+        priority = tiles_ranked[destination_position]
         for corp_position in starts:
             number=starts[corp_position]
             # print (destination_position,corp_position)
@@ -268,10 +291,11 @@ for state in general.get_updates():
 
 
     from console_output import game_output
-    game_output(state, ranks=destinations)
+    game_output(state, ranks=tiles_ranked)
 
     print best_move, best_priority
     print destinations
+    print tiles_ranked
     des=best_move[1]
     corp = best_move[0]
 
