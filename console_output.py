@@ -56,8 +56,12 @@ def game_output(state, ranks=None):
                 l='M'
             elif tile==OBSTACLE:
                 l='O'
+            elif (y,x) in cities:
+                l='C'
             else:
                 l='P%s' %tile
+
+
 
             this_row+='%s,' %l
 

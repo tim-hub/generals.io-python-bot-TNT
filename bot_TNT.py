@@ -65,7 +65,7 @@ def get_tiles_with_priority():
             if  ((tiles[y][x] !=generals.FOG )  ):
                 tiles_we_see.append((y,x))   #get what we see in the map
 
-            if  (tiles[y][x] != generals.MOUNTAIN ): # this is where we can go
+            if  (tiles[y][x] != generals.OBSTACLE and tiles[y][x] !=generals.MOUNTAIN  and tiles[y][x]!=generals.FOG): # this is where we can go
                 is_a_capital= (y,x) in generals_list
 
                 is_a_city= (y,x) in cities
@@ -127,17 +127,20 @@ def rank_all_we_see(destinations, tiles_we_see):
 def get_priority_of_the_tile(priority, distance ):
     # print priority
     # print distance
+    # print cols+rows
     # print cols
+    p=(-math.log(distance, cols+rows)+1)*priority*0.615 # 0: +infinate, cols:0, 1:1
+    # print  p
 
 
-    return 1-math.log(distance, cols+rows)*priority # 0: +infinate, cols:0, 1:1
+    return p
 
 
 def what_tiles_we_see():
     tiles_we_see = []
     for y in range(0,len(tiles)):
         for x in range(0, len(tiles[y])):
-            if not ((tiles[y][x] ==generals.FOG ) ):
+            if  ((tiles[y][x] !=generals.FOG and tiles[y][x]!=generals.OBSTACLE ) ):
                 tiles_we_see.append((y,x))   #get what we see in the map
     return tiles_we_see
 
