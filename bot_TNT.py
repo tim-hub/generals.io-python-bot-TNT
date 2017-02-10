@@ -50,12 +50,12 @@ def how_far_from_general(position):
     return (position, general_position)
 
 
-def is_inland(y,x):
-
-    if y+1<cols and y-1>=0 and x-1>=0 and x+1<rows \
-            and tiles[y][x+1] ==our_flag and tiles[y][x-1]==our_flag \
-            and tiles[y-1][x]==our_flag and tiles[y+1][x]==our_flag:
-        return True;
+# def is_inland(y,x):
+#
+#     if y+1<cols and y-1>=0 and x-1>=0 and x+1<rows \
+#             and tiles[y][x+1] ==our_flag and tiles[y][x-1]==our_flag \
+#             and tiles[y-1][x]==our_flag and tiles[y+1][x]==our_flag:
+#         return True;
 
 def get_tiles_with_priority():
     destinations_with_priority={}
@@ -180,10 +180,10 @@ def what_tiles_we_have():
                 # we own this places
                 armies_we_have[(y,x)]=armies[y][x]
                 tiles_we_own.append((y,x))
-                if is_inland(y,x):
-                    inlands.append((y,x))
-                else:
-                    borders.append((y,x))
+                # if is_inland(y,x):
+                #     inlands.append((y,x))
+                # else:
+                #     borders.append((y,x))
 
     return armies_we_have, tiles_we_own,borders,inlands
 
