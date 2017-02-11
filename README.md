@@ -9,8 +9,9 @@ It is a bot for the [generals.io](http://bot.generals.io)
 In the start of game, conquer more lands and conquer faster will get a big advantage. Just like a bomb, exexplosion in a very short time. So I named it TNT.
 
 ## Replays:
-[11/02/2017](
+- [basically running - 11/02/2017](
 http://bot.generals.io/replays/BeEefaiOx)
+- [extend lands faster - 11/02/2017](http://bot.generals.io/replays/reSmCXhOl)
 
 ## Plan
 
