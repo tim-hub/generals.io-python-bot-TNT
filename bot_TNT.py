@@ -3,10 +3,10 @@ import logging
 from generals_io_client import generals
 import math
 
-enermy_capital_value=10
-enermy_city_value=8
-empty_city_value=5
-our_city_value=1
+enermy_capital_value=1000
+enermy_city_value=100
+empty_city_value=50
+our_city_value=10
 empty_tile_value=4
 enerymy_tile_value=2
 
